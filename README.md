@@ -92,43 +92,43 @@ I will use the null provider as my custom provider to upload to the TFC private 
 curl -o terraform-provider-null_3.2.1_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-null/3.2.1/terraform-provider-null_3.2.1_linux_amd64.zip
 ```
 - unzip it as we only need the binary inside
-```shell
+```sh
 unzip terraform-provider-null_3.2.1_linux_amd64.zip
 ```
 - Rename the unzipped binary to match for `myprovider`
-```
+```sh
 mv terraform-provider-null_v3.2.1_x5 terraform-provider-myprovider_v0.1.0_x5
 ```
 - create a zipfile of this binary
-```
+```sh
 zip terraform-provider-myprovider_0.1.0_linux_amd64.zip terraform-provider-myprovider_v0.1.0_x5
 ```
 - We need to create the verification signature for this file
 - Generate the checksum for the zipfile we created
-```
+```sh
 shasum -a 256 terraform-provider-myprovider_0.1.0_linux_amd64.zip > terraform-provider-myprovider_0.1.0_SHA256SUMS
 ```
 - Create a detached signature for the terraform-provider-myprovider_0.1.0_SHA256SUMS file using a gpg key. This will create a file called `terraform-provider-myprovider_0.1.0_SHA256SUMS.sig`
-```
+```sh
 gpg -sb terraform-provider-myprovider_0.1.0_SHA256SUMS
 ```
 - We should have the following files now to upload to the Terraform Cloud Private registry
-```
+```sh
 terraform-provider-myprovider_0.1.0_SHA256SUMS
 terraform-provider-myprovider_0.1.0_SHA256SUMS.sig
 terraform-provider-myprovider_0.1.0_linux_amd64.zip
 ```
 - Upload the provider to the private registry. This is currently only available using the API
 - make sure you export your TFC token on the terminal before you continue
-```
+```sh
 export TOKEN=<your API token for Terraform Cloud with the proper permissions>
 ```
 - We need to have the `gpg-key.pub` contents in a single line in the payload we will be uploading. Execute the following command for this
-```
+```sh
 sed 's/$/\\n/g' gpg-key.pub | tr -d '\n\r'
 ```
 - Create the following `gpg-key-payload.json` with contents. Watch that you add the `\n` for the pgp key in the end
-```
+```json
 {
   "data": {
     "type": "gpg-keys",
@@ -140,7 +140,7 @@ sed 's/$/\\n/g' gpg-key.pub | tr -d '\n\r'
 }
 ```
 - add the gpg private key to the Terraform Cloud
-```
+```json
 curl -sS \
     --header "Authorization: Bearer $TOKEN" \
     --header "Content-Type: application/vnd.api+json" \
@@ -149,11 +149,11 @@ curl -sS \
     https://app.terraform.io/api/registry/private/v2/gpg-keys | jq '.'
 ```    
 - From the output note the key-id. We will need this later
-```
+```json
       "key-id": "FB30E6EB12E726A5",
 ```      
 - create a file called `provider-payload.json` where we prepare to upload the provider
-```
+```json
 {
   "data": {
     "type": "registry-providers",
@@ -166,7 +166,7 @@ curl -sS \
 }
 ```
 - Make the API call with the previous payload
-```
+```json
 curl -sS \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
@@ -176,7 +176,7 @@ curl -sS \
 ```  
 - create a version on the provider by creating a file called `provider-version-payload.json`
 The gpg key is the one with got back a few steps ago
-```
+```json
 {
   "data": {
     "type": "registry-provider-versions",
@@ -189,7 +189,7 @@ The gpg key is the one with got back a few steps ago
 }
 ```
 - Make the API call to create the version
-```
+```json
 curl -sS \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
@@ -198,16 +198,16 @@ curl -sS \
   https://app.terraform.io/api/v2/organizations/patrickmunne/registry-providers/private/patrickmunne/myprovider/versions | jq '.'
 ```
 - Write down the following output
-```
+```json
       "shasums-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6RHJGL2Q1L09QdXc5R2k2TVV5cTZQcVYrUWZOM2NqdEdUcDQ5bEx0UnIzdENTZjR5Z2tWZjRTeldhbFFGb1Awa0IzMFNxN0dSbCtjZmV4eG1NVzJTSDc4VUtONE5iUkVVL1lDYTJLT0tTQ0lwdVEyL0V3M2Nvb2E2Tk13cXI0ci92M1VRQU5GYmpEeW9ZOEZwUS9iQnJZb1ZCeUExNW1tcUYxSEFmMWUreHRYaEZpNmwzV25Nc1RFU3FJZWtYMkM3YVp5S1R6N3gxdnhmY2taSnFFdldEbVhOMmwyRGQzRURsTXZ0ak5JejRIcFdBQW5wWVAyQVRwd1RIVkgvdzVndDViNmt1L2Z1Y0UzYzBodyswSCtYeE5idDhmS1NhZ0pTcnJhNlpndC9TaXc9",
       "shasums-sig-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6aG1UVG5TellrWmdyYUJtY1pDUklHa1J1SE5IKy8wN281akVtaDVRd3RpUTAzU014dWN6eXMvS1VUUWZkakwzcWZyY1kvODk5YkczNlQ0a3hDaFRES0NDOWp0blZFRGxiWEYrQ3dWTGIvZTJJSEFNQWhhbXR4SExqTjBmdkJOYWJSUi9sSEF4WWwrT1ZkRk9kNytYb2dCa3pqcUJHMHdKYURqUkhsN3dhL29KblNxLzRrbVROcGRIcnNqRW1CSmljRFhVSUJCOTBUK0tOYVlVNWt4dzlSd295aGpZVWtQa3ZWT0twM3ozMVBNTUwyVWdVa0VVTThFT3FHbmt3ZWZTazZCZi9GamtMQndXTnNVakJjVGJxMUoxdzNnT2NBcmw0SWE3cWNFQkZ5US9ZVWdJYw"
 ```
 - Upload the shasums file to the shasums-upload from the previous point
-```
+```sh
 curl -T terraform-provider-myprovider_0.1.0_SHA256SUMS <URL from data.links.shasums-upload>
 ```
 - Upload the shasums signature file to the shasums-sig-upload
-```
+```sh
 curl -T terraform-provider-myprovider_0.1.0_SHA256SUMS.sig <URL from data.links.shasums-sig-upload>
 ```
 - We need to start uploading the binaries
@@ -215,7 +215,7 @@ curl -T terraform-provider-myprovider_0.1.0_SHA256SUMS.sig <URL from data.links.
 - Create the following payload with file `provider-version-payload-platform.json`
 
 shasum the shasum of the archive file containing the binary. Take it from the terraform-provider-myprovider_0.1.0_SHA256SUMS file.
-```
+```json
 {
   "data": {
     "type": "registry-provider-version-platforms",
@@ -229,7 +229,7 @@ shasum the shasum of the archive file containing the binary. Take it from the te
 }
 ```
 - Make the API call
-```
+```sh
 curl -sS \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
@@ -238,7 +238,7 @@ curl -sS \
   https://app.terraform.io/api/v2/organizations/patrickmunne/registry-providers/private/patrickmunne/myprovider/versions/0.1.0/platforms | jq '.'
 ```
 - Upload the binary to the provider-binary-upload from the previous point
-```
+```sh
 curl -T terraform-provider-myprovider_0.1.0_linux_amd64.zip <URL from data.links.provider-binary-upload>
 ```
 - Login to terraform Cloud and verify the private provider is available
@@ -248,7 +248,7 @@ curl -T terraform-provider-myprovider_0.1.0_linux_amd64.zip <URL from data.links
 
 - Fork this repository to your own environment
 - Update the `main.tf` with the information of your own provider
-```
+```hcl
 terraform {
   required_providers {
     myprovider = {
@@ -268,9 +268,9 @@ terraform {
 ![](media/20230413120216.png)   
 - If you get an error like the following you made a mistake somewhere
 ![](media/20230413120439.png)  
-- In this case the shasum files were not uploaded correctly. I removed the version and did those steps again. Remove the version with the following API call
+- In this case the shasum files were not uploaded correctly. I removed the version and did those steps again. Removed the version with the following API call
 
-```
+```sh
 curl \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
