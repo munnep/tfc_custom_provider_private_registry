@@ -1,24 +1,22 @@
 # tfc_customer_provider_registry
 
-In this repository we will publish a custom provider to the Terraform Cloud Private registry and use it in our code. 
+In this repository we will publish a custom provider to the Terraform Cloud Private registry and test if we done correctly. 
 
 # Prerequisites
 
-- The jq tool downloaded from [here](https://stedolan.github.io/jq/download/) 
-- gnupg package downloaded from [here](https://gnupg.org/download/index.html)
+- The jq tool installed from [here](https://stedolan.github.io/jq/download/) 
+- gnupg package installed from [here](https://gnupg.org/download/index.html)
 
 ## Create a gpg keypair
 gpg keypair is necessary to sign the provider release. 
 
-
-
 - Create a new gpg keypair
-```
+```sh
 gpg --full-generate-key
 ```
 
 - Choose the RSA algorithm. (you don't have to give it a password)
-```
+```sh
 gpg (GnuPG) 2.4.0; Copyright (C) 2021 Free Software Foundation, Inc.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -72,7 +70,7 @@ sub   rsa3072 2023-04-13 [E]
 ```
 
 - Export the public key
-```
+```sh
 gpg -o gpg-key.pub -a --export <key id or email>
 ```
 - You should have a `gpg-key.pub` in the directory where you executed the above command
