@@ -78,7 +78,7 @@ gpg -o gpg-key.pub -a --export <key id or email>
 ### Extra notes
 
 view current gpg keys
-```
+```sh
 gpg -k 
 ```
 
@@ -88,11 +88,11 @@ I will use the null provider as my custom provider to upload to the TFC private 
 
 - Download the null provider for linux. We need the linux version because TFC executes your code on a linux container. 
 
-```
+```sh
 curl -o terraform-provider-null_3.2.1_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-null/3.2.1/terraform-provider-null_3.2.1_linux_amd64.zip
 ```
 - unzip it as we only need the binary inside
-```
+```sh
 unzip terraform-provider-null_3.2.1_linux_amd64.zip
 ```
 - Rename the unzipped binary to match for `myprovider`
