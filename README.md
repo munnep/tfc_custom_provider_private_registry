@@ -201,9 +201,8 @@ curl -sS \
 ```
 - Write down the following output
 ```
-"shasums-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6Z21zamU4VHRheHYxN1NyUDNNMUZ1bWlld05tY1BaRmt4NFN6Wldzc1JPdk9pcDlySWxyU2c2UDlLSWZBVDFTeWtjZ1Bxa0p3UzBqenUyczVXdUIzOGlKUHBhUE5TRi9yYnR1b2IzbUJjcVp5SXorY0huZHp2c2JzaUdwZlFXRVFwTFV2ZC9wbExEVU94NGxDUU5rbitiSC9ibFd2S2ZRZ2V4MEhXU2kyeEpjSllTcXlMZHJZbzBURHNvWlhFZGlzSDQ4ZGNLRHUvY0s0UUhDUi81UmlHa25wdkd3RlJhNXlFTlpHNjVxWWtEdVpZNVpkTlEreUtIeG80RUczejRQRXVUSVh2cCs5T0lSYnFuWWFmWXFYMWpEVEh4b1dHa2VEU0FpT2ZSWGRQWVk9",
-
-"shasums-sig-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6eWJUNFVSSS9QL1cvY1hnN3VSaElacGtKUVNYWTUydTdUZzlLYjFoUGFKS2NKSzRheldDeDJzNXlIOW5HZzZKUFE1RkFTaG00b082aHpiRFBPYkhRdFg4N1dEV200VHRwckMvSG4rTUxtdGhHcGtRcStySmk3L0dIUVVUczM2ZkpDd2tuQ2tiWTVHQWxhTzhuWEorZTdubHZyTkNIc0diYVQ4bWo1U3c1cTdFV0M2cFNuL0pmNzhlbTVlUGNZa2ZNL3AwVVB2cnR5aytNWmhIODcvSHh3NVRoN0hpeVNwWWUyWklhdlV1MU44bTN2YmxFKzZJdmZLbkNqNFZTOXpoMWlzbVV5RnYweW8xRzloZ3NyQ004aHNRcUpOanZSREQ1OVVOL082U3djL05oNEF4Ug"
+      "shasums-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6RHJGL2Q1L09QdXc5R2k2TVV5cTZQcVYrUWZOM2NqdEdUcDQ5bEx0UnIzdENTZjR5Z2tWZjRTeldhbFFGb1Awa0IzMFNxN0dSbCtjZmV4eG1NVzJTSDc4VUtONE5iUkVVL1lDYTJLT0tTQ0lwdVEyL0V3M2Nvb2E2Tk13cXI0ci92M1VRQU5GYmpEeW9ZOEZwUS9iQnJZb1ZCeUExNW1tcUYxSEFmMWUreHRYaEZpNmwzV25Nc1RFU3FJZWtYMkM3YVp5S1R6N3gxdnhmY2taSnFFdldEbVhOMmwyRGQzRURsTXZ0ak5JejRIcFdBQW5wWVAyQVRwd1RIVkgvdzVndDViNmt1L2Z1Y0UzYzBodyswSCtYeE5idDhmS1NhZ0pTcnJhNlpndC9TaXc9",
+      "shasums-sig-upload": "https://archivist.terraform.io/v1/object/dmF1bHQ6djI6aG1UVG5TellrWmdyYUJtY1pDUklHa1J1SE5IKy8wN281akVtaDVRd3RpUTAzU014dWN6eXMvS1VUUWZkakwzcWZyY1kvODk5YkczNlQ0a3hDaFRES0NDOWp0blZFRGxiWEYrQ3dWTGIvZTJJSEFNQWhhbXR4SExqTjBmdkJOYWJSUi9sSEF4WWwrT1ZkRk9kNytYb2dCa3pqcUJHMHdKYURqUkhsN3dhL29KblNxLzRrbVROcGRIcnNqRW1CSmljRFhVSUJCOTBUK0tOYVlVNWt4dzlSd295aGpZVWtQa3ZWT0twM3ozMVBNTUwyVWdVa0VVTThFT3FHbmt3ZWZTazZCZi9GamtMQndXTnNVakJjVGJxMUoxdzNnT2NBcmw0SWE3cWNFQkZ5US9ZVWdJYw"
 ```
 - Upload the shasums file to the shasums-upload from the previous point
 ```
@@ -262,4 +261,21 @@ terraform {
 }
 ```
 - Create a new workspace pointing to this repository
+![](media/20230413113919.png)  
+![](media/20230413113939.png)  
+![](media/20230413113953.png)  
+![](media/20230413114007.png)  
+![](media/20230413114024.png)  
+- Do a new run and the output should be the following. If the plan finished it proves the provider was downloaded and initialized
+![](media/20230413120216.png)   
+- If you get an error like the following you made a mistake somewhere
+![](media/20230413120439.png)  
+- In this case the shasum files were not uploaded correctly. I removed the version and did those steps again. Remove the version with the following API call
 
+```
+curl \
+  --header "Authorization: Bearer $TOKEN" \
+  --header "Content-Type: application/vnd.api+json" \
+  --request DELETE \
+  https://app.terraform.io/api/v2/organizations/patrickmunne/registry-providers/private/patrickmunne/myprovider/versions/0.1.0
+```
