@@ -140,7 +140,7 @@ sed 's/$/\\n/g' gpg-key.pub | tr -d '\n\r'
 }
 ```
 - add the gpg private key to the Terraform Cloud
-```json
+```sh
 curl -sS \
     --header "Authorization: Bearer $TOKEN" \
     --header "Content-Type: application/vnd.api+json" \
@@ -166,7 +166,7 @@ curl -sS \
 }
 ```
 - Make the API call with the previous payload
-```json
+```sh
 curl -sS \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
@@ -189,7 +189,7 @@ The gpg key is the one with got back a few steps ago
 }
 ```
 - Make the API call to create the version
-```json
+```sh
 curl -sS \
   --header "Authorization: Bearer $TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
