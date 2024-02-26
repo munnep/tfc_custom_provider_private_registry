@@ -1,0 +1,10 @@
+{
+    "data": {
+      "type": "registry-providers",
+        "attributes": {
+        "name": "oci",
+        "namespace": "test",
+        "registry-name": "private"
+      }
+    }
+  }

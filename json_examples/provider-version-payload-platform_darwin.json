@@ -1,0 +1,11 @@
+{
+    "data": {
+      "type": "registry-provider-version-platforms",
+      "attributes": {
+        "os": "darwin",
+        "arch": "amd64",
+        "shasum": "6571b434d23467f0edb47724df445a0cf39bb5c39f3df4e77efad3b0eacd390e",
+        "filename": "terraform-provider-oci_5.30.0_darwin_amd64.zip"
+      }
+    }
+  }
